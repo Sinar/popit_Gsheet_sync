@@ -14,7 +14,9 @@ parser.add_argument('sheetName', help= 'Name of sheet in Google spreadsheet to u
 
     
 args, rest = parser.parse_known_args()
+#=============================================
 #VALIDATE ARGS
+#=============================================
 if args.updateBase=='my':
     base_url = "http://api.popit.sinarproject.org"
     token = open('../oAuth/token_my.txt')
@@ -36,18 +38,12 @@ else:
     print("Invalid update type")
 
 
-
-
-
-
 if __name__ == '__main__':
     #IMPORT SHEET CHANGES
     sys.argv = ['gSheet_utils']
     import gSheet_utils
     
-    #df, col_AI_map = importSheet.sheetChanges(args.spreadsheetId, args.spreadsheetId_control, args.sheetName, args.sheetName, args.updateType+'_id')
-    df, col_AI_map = gSheet_utils.importGSheetAsDF(args.spreadsheetId, args.sheetName)
-    
+    df, col_AI_map = importSheet.sheetChanges(args.spreadsheetId, args.spreadsheetId_control, args.sheetName, args.sheetName, args.updateType+'_id')
     gSheet_details = {'sheetID':args.spreadsheetId, 'sheetName': args.sheetName, 'col_AI_map': col_AI_map, 'sub_langs':sub_langs}
          
    
@@ -59,9 +55,8 @@ if __name__ == '__main__':
     
         sys.argv = ['membershipsUpdate.py']
         import membershipsUpdate_langs  
-        df.apply(lambda row: membershipsUpdate_langs.genPayload(base_url, headers, row, orgID, gSheet_details, ['mm']), axis=1)
-        #df.apply(lambda row: membershipsUpdate_langs.genPayload(base_url, headers, row, args.orgID), axis=1)
-        
+        df.apply(lambda row: membershipsUpdate_langs.genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs), axis=1)
+          
     elif classType == 'person':
         sys.argv = ['personsUpdate_langs.py']
         import personsUpdate_langs
