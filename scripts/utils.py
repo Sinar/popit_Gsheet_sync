@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Mar 13 09:53:08 2017
 
-@author: metamatical
-"""
 import re
 from dateutil import parser
 
