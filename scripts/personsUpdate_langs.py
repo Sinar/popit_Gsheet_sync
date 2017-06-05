@@ -83,6 +83,10 @@ def update_allLangs(popit_className, classID, base_url, headers, payload, sub_la
                 #df of only sublang entries
                 pl_sl= payload.filter(regex=r'(?<={})$'.format(sl), axis=0) 
                 pl_sl.index= [colName.split('_'+sl)[0] for colName in pl_sl.index]   #remove lang suffix
+                try:
+                    pl_sl['other_names'] = [{'name': otherName} for otherName in pl_sl['other_names'].split(',')]
+                except KeyError:
+                    pass
                 pl_sl['id'] = classID
                 url_sl = "{}/{}/{}/{}".format(base_url, sl, popit_className, classID)
                 pl_sublang = utils.seriesToDic(pl_sl) 
@@ -141,6 +145,10 @@ def generatePayload_row(row):
     links = row.filter(regex=r'^link_')
     rest = row.filter(regex=r'^(?!link_|contact_)')
     payload = rest.to_dict()
+    
+    #Other_names payload
+    if payload['other_names']:    
+        payload['other_names'] = [{'name': otherName} for otherName in payload['other_names'].split(',')]
     
     #Get contacts and links payloads
     contactP = getContactPayload(contacts)
