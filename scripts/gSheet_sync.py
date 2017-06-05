@@ -26,7 +26,7 @@ elif args.updateBase=='mm':
     base_url = "http://api.openhluttaw.org"
     token = open('../oAuth/token_mm.txt')
     headers = {'Authorization': token.rstrip()}
-    sub_langs = 'mm'
+    sub_langs = ['mm']
 else:
     print("Invalid Popit base")
     
