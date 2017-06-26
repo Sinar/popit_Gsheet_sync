@@ -6,7 +6,7 @@ from __future__ import print_function
 import httplib2
 import pandas as pd 
 
-from apiclient import discovery
+from googleapiclient import discovery
 import gSheet_credentials
 
 
