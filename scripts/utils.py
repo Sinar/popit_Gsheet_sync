@@ -23,7 +23,7 @@ def datetimeParser(date):
 
 def seriesToDic(s):
     d = {}  
-    for k,v in s.iteritems():
+    for k,v in s.items():
         if v:
             d[k] = v
     return d

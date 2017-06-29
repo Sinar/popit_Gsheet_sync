@@ -4,8 +4,8 @@
 
 import requests, re
 import searchCLI, gSheet_utils, utils
-      
-        
+
+
 def personsUpdate(df, base_url, headers, gSheet_details):
     '''
     Updates data from df to Popit database
@@ -55,6 +55,7 @@ def updatePopitPersons(row, gSheet_details, base_url, headers):
     if r_json:
         updatePersonGsheetIDs(r_json, gSheet_details, gSheet_idx)
         print("{} Success".format(gSheet_idx))
+
     
 def update_allLangs(popit_className, classID, base_url, headers, payload, sub_langs):
     '''
@@ -72,31 +73,34 @@ def update_allLangs(popit_className, classID, base_url, headers, payload, sub_la
         r_en = requests.put(url_en, headers=headers, json=pl_en)
     else:   #Post new entry
         r_en = requests.post(url_en, headers=headers, json=pl_en)   
-        if r_en.ok:
-            try:
-                r_json = r_en.json()['result']
-            except KeyError:
-                r_json = r_en.json()
-            
-            classID = r_json['id']
-            for sl in sub_langs:
-                #df of only sublang entries
-                pl_sl= payload.filter(regex=r'(?<={})$'.format(sl), axis=0) 
-                pl_sl.index= [colName.split('_'+sl)[0] for colName in pl_sl.index]   #remove lang suffix
+    
+    #Post/update sublangs
+    if r_en.ok:
+        try:
+            r_json = r_en.json()['result']
+        except KeyError:
+            r_json = r_en.json()
+        
+        classID = r_json['id']
+        for sl in sub_langs:
+            #df of only sublang entries
+            pl_sl= payload.filter(regex=r'(?<={})$'.format(sl), axis=0) 
+            pl_sl.index= [colName.split('_'+sl)[0] for colName in pl_sl.index]   #remove lang suffix
+            if pl_sl['other_names']:
                 try:
                     pl_sl['other_names'] = [{'name': otherName} for otherName in pl_sl['other_names'].split(',')]
                 except KeyError:
                     pass
-                pl_sl['id'] = classID
-                url_sl = "{}/{}/{}/{}".format(base_url, sl, popit_className, classID)
-                pl_sublang = utils.seriesToDic(pl_sl) 
-                r = requests.put(url_sl, headers=headers, json=pl_sublang)
-    
-            return r_json
-    
-        else:
-            print(r_en.content)
-            
+            pl_sl['id'] = classID
+            url_sl = "{}/{}/{}/{}".format(base_url, sl, popit_className, classID)
+            pl_sublang = utils.seriesToDic(pl_sl) 
+            r = requests.put(url_sl, headers=headers, json=pl_sublang)
+
+        return r_json
+
+    else:
+        print(r_en.content)
+        
 def updatePersonGsheetIDs(json, gSheet_details, gSheet_idx):
     '''
     Updates GSheet with newly generated IDs from successful Popit update

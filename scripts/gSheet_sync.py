@@ -29,7 +29,7 @@ elif args.updateBase=='my':
     sub_langs = ['my']
 else:
     print("Invalid Popit base")
-    
+        
 if args.updateType == 'person':
     classType = 'person'
 elif args.updateType=='membership':
@@ -43,8 +43,8 @@ if __name__ == '__main__':
     sys.argv = ['gSheet_utils']
     import gSheet_utils
     
-    #df, col_AI_map = gSheet_utils.sheetChanges(args.spreadsheetId, args.spreadsheetId_control, args.sheetName, args.sheetName, args.updateType+'_id')
-    df, col_AI_map = gSheet_utils.importGSheetAsDF(args.spreadsheetId, args.sheetName)
+    df, col_AI_map = gSheet_utils.sheetChanges(args.spreadsheetId, args.spreadsheetId_control, args.sheetName, args.sheetName, args.updateType+'_id')
+    #df, col_AI_map = gSheet_utils.importGSheetAsDF(args.spreadsheetId, args.sheetName)
     gSheet_details = {'sheetID':args.spreadsheetId, 'sheetName': args.sheetName, 'col_AI_map': col_AI_map, 'sub_langs':sub_langs}
          
    

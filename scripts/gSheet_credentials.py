@@ -15,7 +15,7 @@ except ImportError:
     flags = None
 
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
-CLIENT_SECRET_FILE = '../oAuth/client_secret.json')
+CLIENT_SECRET_FILE = '../oAuth/client_secret.json'
 APPLICATION_NAME = 'Google Sheets API Python'
 
 
@@ -29,7 +29,7 @@ def get_credentials():
         Credentials, the obtained credential.
     """
     #WINDOWS
-    credential_path = '../oAuth/sheets.googleapis.com-python-quickstart.json')
+    credential_path = '../oAuth/sheets.googleapis.com-python-quickstart.json'
     
     store = Storage(credential_path)
     credentials = store.get()

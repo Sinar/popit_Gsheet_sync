@@ -17,11 +17,13 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
         row: pandas series object
         orgID: organization of ID for membership
         gSheet_details: dic containing details of gSheet synced from
-        sub_langs: List of sub languages to update eg. ['mm'], or ['my', 'cn', 'id']
+        sub_langs: List of sub languages to update eg. ['my'], or ['ms', 'cn', 'id']
         
     '''
-    
     gSheet_idx = row['gSheet_index']
+    
+    #HLUTTAW IDENTIFIER
+    hluttaw_id = row['hluttaw_id']
     
     #UPDATE ON_BEHALF_OF
     on_behalf_ofP = row.filter(regex=r'^on_behalf_of_')
@@ -37,6 +39,7 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     #UPDATE AREA
     areaP = row.filter(regex=r'^area_')
     areaP.index = [colName.split('area_')[1] for colName in areaP.index]
+    areaP["classification"] = 'Parliamentary Constituency'
     area_id = areaP.pop('id')
     
     if not area_id:   #Get ID from area_name or area identifier:
@@ -74,6 +77,7 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     'organization_id': orgID,
     'start_date': utils.datetimeParser(row['start_date']),
     'end_date': utils.datetimeParser(row['end_date']),
+    'identifiers': hluttaw_id
      }
     url = base_url+ "/en/memberships/"
     memP = dict((k,v) for k,v in memP.items() if v) #remove keys with null vals
@@ -83,11 +87,17 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
         r = requests.put(url, headers=headers, json= memP)
     else:
         r = requests.post(url, headers=headers, json=memP)
-        membership_id = r.json()['result']['id']
+        try:
+            membership_id = r.json()['result']['id']
+        except KeyError:
+            print(r.json())
+            
     
     
     #update GSheet with newly updated/obtained IDs
     memP.pop('organization_id')
+    memP.pop('identifiers')
+
     col_AI_map = gSheet_details['col_AI_map']
     sheetID = gSheet_details['sheetID']
     sheetName = gSheet_details['sheetName']
@@ -97,12 +107,13 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
 
     for k,v in memP.items():
         gSheet_utils.updateGSheetCell(v, sheetID, sheetName, col_AI_map[k], gSheet_idx)
-
+        
+    print("{} Done".format(gSheet_idx))
     
 def update_allLangs(popit_className, classID, base_url, headers, payload, sub_langs):
     '''
     Update/post to Popit class with entries for en and all sub_langs
-    sub_langs = list of sub_langs, eg. ['mm', 'my']
+    sub_langs = list of sub_langs, eg. ['ms', 'my']
     '''
     #DF of all non_lang and EN entries
     pl = payload.filter(regex=r'(?<!{})$'.format("|".join(sub_langs)), axis=0)

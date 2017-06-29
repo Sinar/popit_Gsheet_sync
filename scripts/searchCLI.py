@@ -31,7 +31,7 @@ def searchCLI(base_url, name, class_, feature, otherfeature):
         matchID = searchMatchCLI(searchOtherURL, name, feature)
         if matchID:
              while True:
-                store = raw_input('Store "{0}" as an alternate {1} under the matched {1}? (y/n): '.format(name, feature))
+                store = input('Store "{0}" as an alternate {1} under the matched {1}? (y/n): '.format(name, feature))
                 if store.lower() == 'y':
                     storeURL = '{}/en/{}/{}/{}'.format(base_url, class_, matchID, otherfeature)                               
                     storePayload = {feature: name}
@@ -62,28 +62,34 @@ def searchMatchCLI(searchURL, name, feature):
         print("\n===========")
         print("%d closest matches found for %s: " %(len(resultsDic), name))
         ids = list(resultsDic.keys())
-        for j in range(len(ids)):
-            print("%d.\n  %s: %s \n  ID: %s"%(j, feature.upper(), resultsDic[ids[j]], ids[j]))
-    
-    
-        while True:
-            match = raw_input("Do any of these results match? (y/n): ")
-            if match.lower() == 'y':
-                while True:
-                    try:
-                        matchIndex = int(input("Please select the matching index: "))
-                        if matchIndex>=0 and matchIndex< len(ids):
-                            matchID = ids[matchIndex]
-                            break
-                    except:
-                        pass
-                    
-                break
-            elif match.lower() == 'n':
-                matchID = "" 
-                break
-            else:
-                print("Invalid input\nDo any of these results match? (y/n)")
+        
+        if len(ids)==1:
+            matchID = ids[0]
+            print('One match found {}'.format(matchID))
+            
+        else:
+            for j in range(len(ids)):
+                print("%d.\n  %s: %s \n  ID: %s"%(j, feature.upper(), resultsDic[ids[j]], ids[j]))
+        
+        
+            while True:
+                match = input("Do any of these results match? (y/n): ")
+                if match.lower() == 'y':
+                    while True:
+                        try:
+                            matchIndex = int(input("Please select the matching index: "))
+                            if matchIndex>=0 and matchIndex< len(ids):
+                                matchID = ids[matchIndex]
+                                break
+                        except:
+                            pass
+                        
+                    break
+                elif match.lower() == 'n':
+                    matchID = "" 
+                    break
+                else:
+                    print("Invalid input\nDo any of these results match? (y/n)")
             
     else:
         matchID = ""
