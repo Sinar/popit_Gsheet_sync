@@ -43,7 +43,7 @@ def searchCLI(base_url, name, class_, feature, otherfeature):
                 elif store.lower() == 'n':
                     break
                 else:
-                    print("Invalid input\nDo any of these results match? (y/n)")
+                   print("Invalid input\nDo any of these results match? (y/n)")
         else:
             print("No matches found. A new entry will be made for this..")
             
@@ -55,23 +55,19 @@ def searchMatchCLI(searchURL, name, feature):
     
     if r.json()['results']:
         results = r.json()['results']
-        resultsDic = {}
-        for j in range(len(results)):
-            p = results[j]
-            resultsDic[p['id']] = p[str(feature)]
-        print("\n===========")
-        print("%d closest matches found for %s: " %(len(resultsDic), name))
-        ids = list(resultsDic.keys())
         
-        if len(ids)==1:
-            matchID = ids[0]
+        if len(results)==1:
+            matchID = results[0]['id']
             print('One match found {}'.format(matchID))
-            
+        
         else:
-            for j in range(len(ids)):
-                print("%d.\n  %s: %s \n  ID: %s"%(j, feature.upper(), resultsDic[ids[j]], ids[j]))
-        
-        
+            ids= []
+            for j in range(len(results)):
+                p= results[j]
+                ids.append(p['id'])
+                print("\n===========")
+                print("{}. {}\nBirth Date: {}\nNational Identity: {}".format(j, p[str(feature)], p['birth_date'], p['national_identity']))
+            
             while True:
                 match = input("Do any of these results match? (y/n): ")
                 if match.lower() == 'y':
@@ -93,6 +89,28 @@ def searchMatchCLI(searchURL, name, feature):
             
     else:
         matchID = ""
+     
     
     return matchID
                     
+            
+
+'''
+resultsDic = {}
+for j in range(len(results)):
+    p = results[j]
+    resultsDic[p['id']] = p[str(feature)]
+print("\n===========")s
+print("%d closest matches found for %s: " %(len(resultsDic), name))
+ids = list(resultsDic.keys())
+
+if len(ids)==1:
+    matchID = ids[0]
+    print('One match found {}'.format(matchID))
+    
+else:
+    for j in range(len(ids)):
+        print("%d.\n  %s: %s \n  ID: %s"%(j, feature.upper(), resultsDic[ids[j]], ids[j]))
+
+'''
+           
