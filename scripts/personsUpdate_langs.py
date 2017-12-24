@@ -4,7 +4,7 @@
 
 import requests, re
 import searchCLI, gSheet_utils, utils
-
+import numpy as np
 
 def personsUpdate(df, base_url, headers, gSheet_details):
     '''
@@ -18,8 +18,10 @@ def personsUpdate(df, base_url, headers, gSheet_details):
     '''
     df.is_copy = False
     #Remove entries with no names
-    df = df[df['name_en']!= ""]
-
+    #df = df[df['name_en']!= ""]
+    named= df[['name_en', 'name_my']].replace('', np.nan).dropna().index.values
+    df = df.iloc[named]
+    
     #ADD NEW PERSONS
     newPersons = df[df['person_id']== ""]
     
@@ -48,9 +50,11 @@ def updatePopitPersons(row, gSheet_details, base_url, headers):
     gSheet_idx = row.pop('gSheet_index')
     personID = row['person_id']
     sub_langs = gSheet_details['sub_langs']
-    row['birth_date']= utils.datetimeParser(row['birth_date'])
-    row['death_date']= utils.datetimeParser(row['death_date'])
-    
+    try:
+        row['birth_date']= utils.datetimeParser(row['birth_date'])
+        row['death_date']= utils.datetimeParser(row['death_date'])
+    except ValueError:
+        print("Date parsing error at {}: Birthdate: {}, Deathdate: {}".format(gSheet_idx, row['birth_date'], row['death_date']))
     r_json = update_allLangs('persons', personID, base_url, headers, row, sub_langs)
     if r_json:
         updatePersonGsheetIDs(r_json, gSheet_details, gSheet_idx)

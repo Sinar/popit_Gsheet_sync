@@ -40,10 +40,10 @@ def importGSheetAsDF(spreadsheetId, sheetName):
     placeholderVals = [['-']*len(colNames)]
     valInput_body={"majorDimension": "ROWS",
      "values": placeholderVals}
-    rangeName = sheetName
+    rangeName = sheetName+'!A:A'
     writeResult = service.spreadsheets().values().append(spreadsheetId=spreadsheetId, range=rangeName, 
             valueInputOption='RAW', body = valInput_body).execute()   
-    
+
     #Store range of placeholder row to be removed later
     updatedRange = writeResult['updates']['updatedRange']
     
