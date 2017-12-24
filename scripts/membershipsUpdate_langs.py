@@ -8,7 +8,7 @@ import utils
 
 
 
-def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs, person_ref):
+def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     '''
     Generates membership payload based on row and updates to Popit database
     Inputs:
@@ -66,15 +66,6 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs, person_
     
     if not person_id:
         person_id = searchCLI.searchCLI(base_url, personP['name_en'], 'persons', 'name', 'othernames', ['birth_date', 'national_identity'])
-    
-    
-    
-    if not person_id:
-        try:
-            person_id = person_ref[hluttaw_id]
-            print("Matched via hluttaw_id: {}".format(hluttaw_id))
-        except KeyError:
-            person_id = searchCLI.searchCLI(base_url, personP['name_en'], 'persons', 'name', 'othernames', ['birth_date', 'national_identity'])
     
     person_id = update_allLangs('persons', person_id, base_url, headers, personP, sub_langs)
          

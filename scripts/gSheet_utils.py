@@ -19,6 +19,21 @@ service = discovery.build('sheets', 'v4', http=http,
                           discoveryServiceUrl=discoveryUrl)
 
 
+def getSheetNames(spreadsheetId):
+    '''
+    Gets list of sheetNames per spreadsheet
+    Inputs:
+        spreadsheetId: ID of Google spreadsheet to import
+        
+    Returns:
+        sheetNames: list of names of sheets in a spreadsheet.
+    '''    
+    sheets_metadata = service.spreadsheets().values().get(spreadsheetId=spreadsheetId).execute()
+    sheets = sheets_metadata.get('sheets', '')
+    sheetNames = [sheets[i].get('properties')['title'] for i in range(len(sheets))]
+    
+    return sheetNames
+
 def importGSheetAsDF(spreadsheetId, sheetName):
     '''
     Imports Google Sheet as DF
