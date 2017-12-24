@@ -9,7 +9,7 @@ usage: gSheet_sync.py [-h]
 
 positional arguments:
 
-	updateBase            mm for OpenHluttaw, my for Sinar
+	updateBase            my for OpenHluttaw, ms for Sinar
 	updateType            person or membership
 	spreadsheetId         ID of Google spreadsheet
 	spreadsheetId_control ID of control Google spreadsheet to generate list of changes from last update (lastUpdated directory on Drive)
