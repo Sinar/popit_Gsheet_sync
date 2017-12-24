@@ -17,18 +17,19 @@ def searchCLI_naive(base_url, searchTerm, class_, featureName):
     else:
         return ""
         
-def searchCLI(base_url, name, class_, feature, otherfeature):
+def searchCLI(base_url, name, class_, feature, otherfeature, featureList):
     '''
     class: org, person, post
     feature: name, label
+    featureList: list of additional features to display in search results
     '''
     
     searchURL = '{}/en/search/{}?q={}:"{}"'.format(base_url, class_, feature, name)
-    matchID = searchMatchCLI(searchURL, name, feature)
+    matchID = searchMatchCLI(searchURL, name, feature, featureList)
     if not matchID:
         searchOtherURL = '{}/en/search/{}?q=other_{}s.{}:"{}"'.format(base_url, class_, feature, feature, name)
         
-        matchID = searchMatchCLI(searchOtherURL, name, feature)
+        matchID = searchMatchCLI(searchOtherURL, name, feature, featureList)
         if matchID:
              while True:
                 store = input('Store "{0}" as an alternate {1} under the matched {1}? (y/n): '.format(name, feature))
@@ -50,7 +51,7 @@ def searchCLI(base_url, name, class_, feature, otherfeature):
     return matchID
 
 
-def searchMatchCLI(searchURL, name, feature):
+def searchMatchCLI(searchURL, name, feature, featureList):
     r = requests.get(searchURL)
     
     if r.json()['results']:
@@ -66,8 +67,10 @@ def searchMatchCLI(searchURL, name, feature):
                 p= results[j]
                 ids.append(p['id'])
                 print("\n===========")
-                print("{}. {}\nBirth Date: {}\nNational Identity: {}".format(j, p[str(feature)], p['birth_date'], p['national_identity']))
-            
+                print("{}. {}".format(j, p[str(feature)]))
+                for f in featureList:
+                    print("{}: {}".format(f.upper(), p[str(f)]))
+                
             while True:
                 match = input("Do any of these results match? (y/n): ")
                 if match.lower() == 'y':
