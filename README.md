@@ -1,15 +1,18 @@
+
 # Popit-Gsheet Sync
 Popit-Gsheet syncs data from Google sheets to the Popit database.
 
 
 ## Installation
-1. Google Sheets API setup
-2. Git clone
+Clone/download this project.
 
-
-## Configuration
-Config file.
-
+### Google Sheets API setup
+To use the sync script, the user must setup the Google Sheets API. 
+1. Follow Step 1 of this [guide](https://developers.google.com/sheets/api/quickstart/python) to enable the Google Sheets API.
+2. Move the _client_secret.json_ file  into the oAuth directory in the Popit-Gsheet project directory.
+3. Follow step 2 of the guide and install the Google client library
+4. Move _sheets.googleapis.com-python-quickstart.json_ to the oAuth directory.
+5. Replace the token txt file(s) in the oAuth directory with the relevant Popit API tokens from Sinar.
 
 
 ## Templates
@@ -17,10 +20,10 @@ The columns in the data template correspond to fields belonging to entities in P
 
 The column names should remain unchanged, unless otherwise specified. The order of the columns does not matter, and can be reordered or hidden from view if convenient.
 
-### Modifying the templates
 ###  Language codes
 
 The template allows for multiple languages to be specified for a field entry. For example:
+
 | org_name_en  |org_name_sl |org_id |
 |-------------- |-----------|----------|
 
@@ -36,10 +39,7 @@ If more sub-languages are necessary, you can add additional columns for each in 
 |-------------------------- |-------------|-------------|------------------------|
 | House of Representatives  |Dewan Rakyat |众议院       |53633b5a19ee29270d8a9ecf|
 
-Additionally, ensure that these language codes are specified in the config file.
-
-
-You can remove the sublang columns if you have no use for alternate languages.
+The sublang columns can be removed if there is no need for alternate languages.
 
 
 ### Unnecessary columns. 
@@ -79,25 +79,22 @@ positional arguments:
 |updateBase|            mm for OpenHluttaw, my for Sinar|
 |--------------|-------------------------------------------------|
 |updateType|            person or membership|
-|spreadsheetId|         ID of Google spreadsheet|
+|spreadsheetId|         ID of Google spreadsheet  (https://docs.google.com/spreadsheets/d/copy_the_ID_here)
 |spreadsheetId_control| ID of control Google spreadsheet to generate list of changes from last update (lastUpdated directory on Drive)|
 |sheetName |            Name of sheet in Google spreadsheet to update|
+
 ### First sync
+Taking the example of syncing a spreadsheet using the persons template,
 
-First sync.
+	gsheet_sync.py person 1CACj8dRV5AjyuQ2Fta M21ls7WgFXZULef5cOrpYF0K8 MP_persons
 
-This will:
-1. Update the Popit DB with the new data.
-2. 
+During the first sync, no lastUpdate sheet has been created yet, due to the lack of prior updates. 
+Pass in the sheetID to a new empty sheet created in your desired directory for the spreadsheetID_control parameter. This will sync the data from the spreadsheetId sheet, and copy the contents of the fully synced sheet over to the lastUpdate sheet, as a record of the state of the most recent update.
 
-Option: lastupdate diff
-1. First sync: Pass in an empty sheetID created in your desired directory for the last_update parameter.
-This will do the same as a regular update, but also create a sheet sheetID which is a duplicate of your current sheet, representing the state of the most recent update.
+### Subsequent syncs
+When subsequent changes have been made to the original spreadsheet, which we'd like to sync to the Popit database, we run the same line of code:
+		
+	gsheet_sync.py person 1CACj8dRV5AjyuQ2Fta M21ls7WgFXZULef5cOrpYF0K8 MP_persons
 
-As opposed to a regular update, which runs through every row in the sheet to sync the data, passing in a lastUpdate sheetID will compare the current sheet to the previous sheet for any changes or additions, and updates only those modifications. This is handy for saving time and bandwidth.
-
-
-# Usage
-Provide a short code snippet (if applicable), or short usage instructions
-
+As opposed to a regular update, which runs through every row in the sheet to sync the data, passing in a lastUpdate sheetID will compare the current sheet to our lastUpdate sheet for any changes or additions, and will update only those modifications to the Popit database. 
 
