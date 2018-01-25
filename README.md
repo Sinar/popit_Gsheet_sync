@@ -1,6 +1,6 @@
 
-# Popit-Gsheet Sync
-Popit-Gsheet syncs data from Google sheets to the Popit database.
+# Popit-Gsheet-Sync
+Popit-Gsheet-Sync syncs data from Google sheets to the Popit database.
 
 
 ## Installation
@@ -68,7 +68,7 @@ Likewise for links:
 |--------------------------|---------------------|
 
 ## Usage
-### Running Popit-Gsheet sync 
+### Running Popit-Gsheet-Sync 
 
 To sync between Google Sheet and Popit DB, run gSheet_sync.py in the console with the chosen parameters.
 
@@ -99,3 +99,5 @@ When subsequent changes have been made to the original spreadsheet, which we'd l
 
 As opposed to a regular update, which runs through every row in the sheet to sync the data, passing in a lastUpdate sheetID will compare the current sheet to our lastUpdate sheet for any changes or additions, and will update only those modifications to the Popit database. 
 
+
+### See the tutorials folder for more examples.
