@@ -1,7 +1,10 @@
 SETUP GOOGLE SHEETS AUTHENTICATION CREDENTIALS
 ==============================================
+To use the sync script, the user must setup the Google Sheets API. 
 
-1. Follow the guide here (https://developers.google.com/sheets/api/quickstart/python) to enable Google Sheets API (step 1)
-2. Move client_secret.json into this directory
-3. Follow step 2 of the guide and install the Google client library 
-4. Move sheets.googleapis.com-python-quickstart.json to this directory
+1. Follow Step 1 of this [guide](https://developers.google.com/sheets/api/quickstart/python) to enable the Google Sheets API.
+2. Move the _client_secret.json_ file  into the oAuth directory in the Popit-Gsheet project directory.
+3. Follow step 2 of the guide and install the Google client library
+4. Move _sheets.googleapis.com-python-quickstart.json_ to the oAuth directory.
+
+
