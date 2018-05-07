@@ -47,7 +47,7 @@ def searchCLI(base_url, name, class_, feature, otherfeature, featureList):
                 else:
                    print("Invalid input\nDo any of these results match? (y/n)")
         else:
-            print("No matches found. A new entry will be made for this..")
+            print(u"No matches found for {}. A new entry will be made for this.".format(name))
             
     return matchID
 
@@ -60,15 +60,19 @@ def searchMatchCLI(searchURL, name, feature, featureList):
         
         if len(results)==1:
             matchID = results[0]['id']
-            print('One match found for {}: {}'.format(name, matchID))
+            print('One match found for {}: \n{}'.format(name, matchID))
         
         else:
             ids= []
+            print('Matches found for {}: '.format(name))
+
             for j in range(len(results)):
                 p= results[j]
                 ids.append(p['id'])
+
                 print("\n===========")
                 print(u"{}. {}".format(j, p[str(feature)]))
+                print("Popit ID: {}".format(p['id']))
                 for f in featureList:
                     print(u"{}: {}".format(f.upper(), p[str(f)]))
                 
