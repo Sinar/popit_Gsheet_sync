@@ -22,34 +22,36 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     '''
     gSheet_idx = row['gSheet_index']
     
-    #HLUTTAW IDENTIFIER
-    hluttaw_id = row['hluttaw_id']
     
     #UPDATE ON_BEHALF_OF
     on_behalf_ofP = row.filter(regex=r'^on_behalf_of_')
     on_behalf_ofP.index = [colName.split('on_behalf_of_')[1] for colName in on_behalf_ofP.index]
     on_behalf_ofP['classification'] = "Party"
+    on_behalf_ofP['name_en'] = utils.clean(on_behalf_ofP['name_en'])
     on_behalf_of_id = on_behalf_ofP.pop('id')    
      
     if not on_behalf_of_id and on_behalf_ofP['name_en']:
         on_behalf_of_id = searchCLI.searchCLI(base_url, on_behalf_ofP['name_en'], 'organizations', 'name', 'othernames', [])
-            
-    on_behalf_of_id = update_allLangs('organizations', on_behalf_of_id, base_url, headers, on_behalf_ofP, sub_langs)
     
+    on_behalf_of_id = update_allLangs('organizations', on_behalf_of_id, base_url, headers, on_behalf_ofP, sub_langs)
+
+
     #UPDATE AREA
     areaP = row.filter(regex=r'^area_')
     areaP.index = [colName.split('area_')[1] for colName in areaP.index]
     areaP["classification"] = 'Parliamentary Constituency'
+    areaP['name_en'] = utils.clean(areaP['name_en'])
     area_id = areaP.pop('id')
     
     if not area_id:   #Get ID from area_name or area identifier:
-        area_id = searchCLI.searchCLI_naive(base_url, areaP['name_en'], 'areas', 'name', [])
+        area_id = searchCLI.searchCLI_naive(base_url, areaP['name_en'], 'areas', 'name')
         
     area_id = update_allLangs('areas', area_id, base_url, headers, areaP, sub_langs)
       
     #UPDATE POST
     postP = row.filter(regex=r'^post_')
     postP.index = [colName.split('post_')[1] for colName in postP.index]
+    postP['label_en'] = utils.clean(postP['label_en'])
     post_id = postP.pop('id')
     
     if not post_id and postP['label_en']:
@@ -77,7 +79,6 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     'organization_id': orgID,
     'start_date': utils.datetimeParser(row['start_date']),
     'end_date': utils.datetimeParser(row['end_date']),
-    'identifiers': hluttaw_id
      }
     url = base_url+ "/en/memberships/"
     memP = dict((k,v) for k,v in memP.items() if v) #remove keys with null vals
@@ -99,7 +100,6 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
         memP.pop('organization_id')
     except KeyError: #org_id was null
         pass
-    memP.pop('identifiers')
 
     col_AI_map = gSheet_details['col_AI_map']
     sheetID = gSheet_details['sheetID']
@@ -151,6 +151,3 @@ def update_allLangs(popit_className, classID, base_url, headers, payload, sub_la
 
 
     return classID
-
-    
-
