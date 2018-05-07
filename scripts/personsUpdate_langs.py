@@ -19,7 +19,7 @@ def personsUpdate(df, base_url, headers, gSheet_details):
     df.is_copy = False
     #Remove entries with no names
     #df = df[df['name_en']!= ""]
-    named= df[['name_en', 'name_my']].replace('', np.nan).dropna().index.values
+    named= df['name_en'].replace('', np.nan).dropna().index.values
     df = df.iloc[named]
     
     #ADD NEW PERSONS
@@ -30,17 +30,11 @@ def personsUpdate(df, base_url, headers, gSheet_details):
         personName = person['name_en']
         person_id = searchCLI.searchCLI(base_url, personName, 'persons', 'name', 'othernames', ['birth_date', 'national_identity'])
         if person_id:
-            newPersons.is_copy = False
             #set id of person as id found
             df.loc[i, 'person_id'] = person_id
-            newPersons.drop(i, axis=0, inplace= True)
-            
-    if not newPersons.empty: #There are new persons to add
-        newPersons.apply(lambda row: updatePopitPersons(row, gSheet_details, base_url, headers), axis=1)
             
         
-    #UPDATE PERSONS
-    df = df.drop(df[df['person_id']== ""].index)
+    #ADD/UPDATE PERSONS
     df.apply(lambda row: updatePopitPersons(row, gSheet_details, base_url, headers), axis=1)
 
 def updatePopitPersons(row, gSheet_details, base_url, headers):
@@ -140,6 +134,9 @@ def updatePersonGsheetIDs(json, gSheet_details, gSheet_idx):
 
         except KeyError:
             pass
+
+    #Update gSheet with feature values
+    
 
 
     
