@@ -6,7 +6,7 @@ import requests
 def searchCLI_naive(base_url, searchTerm, class_, featureName):    
     foundID = ""
 
-    searchURL = '{}/en/search/{}/?q={}:{}'.format(base_url, class_, featureName, searchTerm )
+    searchURL = u'{}/en/search/{}/?q={}:{}'.format(base_url, class_, featureName, searchTerm )
     r = requests.get(searchURL)
     if r.ok:
         if r.json()['results']:
@@ -23,18 +23,19 @@ def searchCLI(base_url, name, class_, feature, otherfeature, featureList):
     feature: name, label
     featureList: list of additional features to display in search results
     '''
+      
+    searchURL = u'{}/en/search/{}?q={}:"{}"'.format(base_url, class_, feature, name)
     
-    searchURL = '{}/en/search/{}?q={}:"{}"'.format(base_url, class_, feature, name)
     matchID = searchMatchCLI(searchURL, name, feature, featureList)
     if not matchID:
-        searchOtherURL = '{}/en/search/{}?q=other_{}s.{}:"{}"'.format(base_url, class_, feature, feature, name)
+        searchOtherURL = u'{}/en/search/{}?q=other_{}s.{}:"{}"'.format(base_url, class_, feature, feature, name)
         
         matchID = searchMatchCLI(searchOtherURL, name, feature, featureList)
         if matchID:
              while True:
-                store = input('Store "{0}" as an alternate {1} under the matched {1}? (y/n): '.format(name, feature))
+                store = input(u'Store "{0}" as an alternate {1} under the matched {1}? (y/n): '.format(name, feature))
                 if store.lower() == 'y':
-                    storeURL = '{}/en/{}/{}/{}'.format(base_url, class_, matchID, otherfeature)                               
+                    storeURL = u'{}/en/{}/{}/{}'.format(base_url, class_, matchID, otherfeature)                               
                     storePayload = {feature: name}
                     
                     print(storeURL)
@@ -59,7 +60,7 @@ def searchMatchCLI(searchURL, name, feature, featureList):
         
         if len(results)==1:
             matchID = results[0]['id']
-            print('One match found {}'.format(matchID))
+            print('One match found for {}: {}'.format(name, matchID))
         
         else:
             ids= []
@@ -67,12 +68,12 @@ def searchMatchCLI(searchURL, name, feature, featureList):
                 p= results[j]
                 ids.append(p['id'])
                 print("\n===========")
-                print("{}. {}".format(j, p[str(feature)]))
+                print(u"{}. {}".format(j, p[str(feature)]))
                 for f in featureList:
-                    print("{}: {}".format(f.upper(), p[str(f)]))
+                    print(u"{}: {}".format(f.upper(), p[str(f)]))
                 
             while True:
-                match = input("Do any of these results match? (y/n): ")
+                match = input(u"Do any of these results match for {}? (y/n): ".format(name))
                 if match.lower() == 'y':
                     while True:
                         try:
@@ -106,7 +107,6 @@ for j in range(len(results)):
 print("\n===========")s
 print("%d closest matches found for %s: " %(len(resultsDic), name))
 ids = list(resultsDic.keys())
-
 if len(ids)==1:
     matchID = ids[0]
     print('One match found {}'.format(matchID))
@@ -114,6 +114,4 @@ if len(ids)==1:
 else:
     for j in range(len(ids)):
         print("%d.\n  %s: %s \n  ID: %s"%(j, feature.upper(), resultsDic[ids[j]], ids[j]))
-
 '''
-           
