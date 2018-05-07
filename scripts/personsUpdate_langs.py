@@ -114,32 +114,58 @@ def updatePersonGsheetIDs(json, gSheet_details, gSheet_idx):
     #Update gSheet with contact detail ID
     cd_posted = json['contact_details']
     for i in range(len(cd_posted)):
-        colName = 'contact_'+ cd_posted[i]['type'] + '_id'
+        colName = 'contact_'+ cd_posted[i]['type'] 
         try: 
-            AI_not = col_AI_map[colName]
+            AI_not_id = col_AI_map[colName+'_id']
             cd_id = cd_posted[i]['id']
-            gSheet_utils.updateGSheetCell(cd_id, sheetID, sheetName, AI_not, gSheet_idx)
-       
+            gSheet_utils.updateGSheetCell(cd_id, sheetID, sheetName, AI_not_id, gSheet_idx)
         except KeyError:
             pass
         
+        try: 
+            AI_not = col_AI_map[colName]
+            cd_f = cd_posted[i]['value']
+            gSheet_utils.updateGSheetCell(cd_f, sheetID, sheetName, AI_not, gSheet_idx)
+        except KeyError:
+            pass
+
     #Update gSheet with link details IDs
     lk_posted = json['links']
     for i in range(len(lk_posted)):
-        colName = 'link_'+ lk_posted[i]['note'] + '_id'
+        colName = 'link_'+ lk_posted[i]['note'] 
+        try:
+            AI_not_id = col_AI_map[colName+'_id']
+            lk_id = lk_posted[i]['id']
+            gSheet_utils.updateGSheetCell(lk_id, sheetID, sheetName, AI_not_id, gSheet_idx)
+        except KeyError:
+            pass
+            
         try:
             AI_not = col_AI_map[colName]
-            lk_id = lk_posted[i]['id']
-            gSheet_utils.updateGSheetCell(lk_id, sheetID, sheetName, AI_not, gSheet_idx)
-
+            lk_f = lk_posted[i]['url']
+            gSheet_utils.updateGSheetCell(lk_f, sheetID, sheetName, AI_not, gSheet_idx)
         except KeyError:
             pass
 
     #Update gSheet with feature values
-    
+    colNames = [u'additional_name',  u'biography', u'family_name', u'gender', u'given_name',  u'honorific_prefix', u'honorific_suffix', u'name', u'national_identity', u'patronymic_name', u'summary_en']
+    for f in colNames:
+        try:
+            AI_not = col_AI_map[f+'_en']
+            f_val = json[str(f)]
+            gSheet_utils.updateGSheetCell(f_val, sheetID, sheetName, AI_not, gSheet_idx)
+        except KeyError:
+            pass
 
+    colNames2 = ['image', 'birth_date', 'death_date']
+    for f in colNames2:
+        try:
+            AI_not = col_AI_map[f]
+            f_val = json[str(f)]
+            gSheet_utils.updateGSheetCell(f_val, sheetID, sheetName, AI_not, gSheet_idx)
+        except KeyError:
+            pass
 
-    
 def generatePayload_row(row):
     '''
     Generate complete payloads for a single row
