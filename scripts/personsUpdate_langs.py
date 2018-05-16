@@ -24,11 +24,10 @@ def personsUpdate(df, base_url, headers, gSheet_details):
     
     #ADD NEW PERSONS
     newPersons = df[df['person_id']== ""]
-    
     for i in newPersons.index:
         person=  newPersons.loc[i]
         personName = person['name_en']
-        person_id = searchCLI.searchCLI(base_url, personName, 'persons', 'name', 'othernames', ['birth_date', 'national_identity'])
+        person_id = searchCLI.searchCLI(base_url, personName, 'persons', 'name', 'othernames', headers, ['birth_date'])
         if person_id:
             #set id of person as id found
             df.loc[i, 'person_id'] = person_id

@@ -46,13 +46,12 @@ if __name__ == '__main__':
     #df, col_AI_map = gSheet_utils.sheetChanges(args.spreadsheetId, args.spreadsheetId_control, args.sheetName, args.sheetName, args.updateType+'_id')
     df, col_AI_map = gSheet_utils.importGSheetAsDF(args.spreadsheetId, args.sheetName)
     gSheet_details = {'sheetID':args.spreadsheetId, 'sheetName': args.sheetName, 'col_AI_map': col_AI_map, 'sub_langs':sub_langs}
-         
    
     if  classType=='membership':
         sys.argv = ['searchCLI.py']
         import searchCLI
         orgName = ' '.join(args.sheetName.split('memberships_')[1].split('_'))
-        orgID = searchCLI.searchCLI(base_url, orgName, 'organizations', 'name', 'othernames')
+        orgID = searchCLI.base_url, orgName, 'organizations', 'name', 'othernames', headers, [])
         
         if not orgID:
             orgP = {'name': orgName}
@@ -81,31 +80,4 @@ if __name__ == '__main__':
     else:
         print("Invalid class")
 
-'''
-#SYNC ALL SHEETS
-sheetNames = getSheetNames(sheetID)
-for sheetName in sheetNames:
-    orgName = ' '.join(sheetName.split('memberships_')[1].split('_'))
-    orgID = searchCLI.searchCLI(base_url, orgName, 'organizations', 'name', 'othernames', [])
-    print("Importing for {}".format('orgName'))
-    
-    if not orgID:
-            print("Adding org for {}".format(orgName))
-            orgP = {'name': orgName}
-            url = base_url+ "/en/organizations/"
-            r_en = requests.post(url, headers=headers, json=orgP)
-            
-            if r_en.ok:
-                try:
-                    orgID = r_en.json()['result']['id']
-                except KeyError:
-                    orgID = r_en.json()['id']
-            else:
-                print(orgP)
-                print(r_en.content)
-                
-    df, col_AI_map = gSheet_utils.importGSheetAsDF(sheetID, sheetName)
-    gSheet_details = {'sheetID':sheetID, 'sheetName': sheetName, 'col_AI_map': col_AI_map, 'sub_langs':sub_langs}
-    df.apply(lambda row: genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs), axis=1)
-    
-'''
+

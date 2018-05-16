@@ -31,7 +31,7 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     on_behalf_of_id = on_behalf_ofP.pop('id')    
      
     if not on_behalf_of_id and on_behalf_ofP['name_en']:
-        on_behalf_of_id = searchCLI.searchCLI(base_url, on_behalf_ofP['name_en'], 'organizations', 'name', 'othernames', [])
+        on_behalf_of_id = searchCLI.searchCLI(base_url, on_behalf_ofP['name_en'], 'organizations', 'name', 'othernames', headers,  [])
     
     on_behalf_of_id = update_allLangs('organizations', on_behalf_of_id, base_url, headers, on_behalf_ofP, sub_langs)
 
@@ -55,7 +55,7 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     post_id = postP.pop('id')
     
     if not post_id and postP['label_en']:
-        post_id = searchCLI.searchCLI(base_url, postP['label_en'], 'posts', 'label', 'other_labels', [])
+        post_id = searchCLI.searchCLI(base_url, postP['label_en'], 'posts', 'label', 'other_labels', headers, [])
     
     #postP['organization_id'] = orgID
     postP['area_id'] = area_id
@@ -67,7 +67,7 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     person_id = personP['id']
     
     if not person_id:
-        person_id = searchCLI.searchCLI(base_url, personP['name_en'], 'persons', 'name', 'othernames', ['birth_date', 'national_identity'])
+        person_id = searchCLI.searchCLI(base_url, personP['name_en'], 'persons', 'name', 'othernames', headers, ['birth_date', 'national_identity'])
     
     person_id = update_allLangs('persons', person_id, base_url, headers, personP, sub_langs)
          
@@ -93,6 +93,7 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
         except KeyError:
             print(r.json())
             
+
     
     
     #update GSheet with newly updated/obtained IDs
