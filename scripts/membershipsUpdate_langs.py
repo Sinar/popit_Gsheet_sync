@@ -82,11 +82,11 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
      }
     url = base_url+ "/en/memberships/"
     memP = dict((k,v) for k,v in memP.items() if v) #remove keys with null vals
-    membership_id = row['membership_id']    
-    if membership_id:    #Update
-        url = url+ membership_id    
-        r = requests.put(url, headers=headers, json= memP)
-        
+    membership_id = row['membership_id']   
+    membership_exists = requests.get(url+membership_id)
+    
+    if membership_exists.ok:    #Update
+        r = requests.put(url+membership_id, headers=headers, json= memP)
     else:
         r = requests.post(url, headers=headers, json=memP)
         try:
@@ -124,11 +124,12 @@ def update_allLangs(popit_className, classID, base_url, headers, payload, sub_la
     pl = payload.filter(regex=r'(?<!{})$'.format("|".join(sub_langs)), axis=0)
     pl.index= [colName.split('_'+'en')[0] for colName in pl.index]   #remove lang suffix
     
-    url_en = "{}/en/{}/{}".format(base_url, popit_className, classID)  
+    url_en = "{}/en/{}/".format(base_url, popit_className)  
     pl_en = utils.seriesToDic(pl)
              
-    if classID: #Already existing, update
-        r_en = requests.put(url_en, headers=headers, json=pl_en)
+    class_exists = requests.get(url_en+classID)
+    if class_exists.ok: #Already existing, update
+        r_en = requests.put(url_en+classID, headers=headers, json=pl_en)
     else:   #Post new entry
         r_en = requests.post(url_en, headers=headers, json=pl_en)   
         if r_en.ok:

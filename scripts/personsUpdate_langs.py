@@ -63,11 +63,11 @@ def update_allLangs(popit_className, classID, base_url, headers, payload, sub_la
     pl = payload.filter(regex=r'(?<!{})$'.format("|".join(sub_langs)), axis=0)
     pl.index= [colName.split('_'+'en')[0] for colName in pl.index]   #remove lang suffix
     pl_en = generatePayload_row(pl)
-    url_en = "{}/{}/{}/{}".format(base_url, 'en', popit_className, classID)
+    url_en = "{}/{}/{}/".format(base_url, 'en', popit_className)
        
-             
-    if classID: #Already existing, update
-        r_en = requests.put(url_en, headers=headers, json=pl_en)
+    class_exists = requests.get(url_en+classID)
+    if class_exists.ok: #Already existing, update
+        r_en = requests.put(url_en+classID, headers=headers, json=pl_en)
     else:   #Post new entry
         r_en = requests.post(url_en, headers=headers, json=pl_en)   
     
