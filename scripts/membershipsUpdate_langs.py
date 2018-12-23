@@ -31,7 +31,7 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     on_behalf_of_id = on_behalf_ofP.pop('id')    
      
     if not on_behalf_of_id and on_behalf_ofP['name_en']:
-        on_behalf_of_id = searchCLI.searchCLI(base_url, on_behalf_ofP['name_en'], 'organizations', 'name', 'othernames', headers,  [])
+        on_behalf_of_id = searchCLI.searchCLI(base_url, on_behalf_ofP['name_en'], 'organizations', 'name', 'other_names', headers,  [])
     
     on_behalf_of_id = update_allLangs('organizations', on_behalf_of_id, base_url, headers, on_behalf_ofP, sub_langs)
 
@@ -67,7 +67,7 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     person_id = personP['id']
     
     if not person_id:
-        person_id = searchCLI.searchCLI(base_url, personP['name_en'], 'persons', 'name', 'othernames', headers, ['birth_date', 'national_identity'])
+        person_id = searchCLI.searchCLI(base_url, personP['name_en'], 'persons', 'name', 'other_names', headers, ['birth_date', 'national_identity'])
     
     person_id = update_allLangs('persons', person_id, base_url, headers, personP, sub_langs)
          
@@ -86,6 +86,7 @@ def genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs):
     if membership_id:    #Update
         url = url+ membership_id    
         r = requests.put(url, headers=headers, json= memP)
+        
     else:
         r = requests.post(url, headers=headers, json=memP)
         try:

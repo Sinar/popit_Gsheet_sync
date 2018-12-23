@@ -51,7 +51,7 @@ if __name__ == '__main__':
         sys.argv = ['searchCLI.py']
         import searchCLI
         orgName = ' '.join(args.sheetName.split('memberships_')[1].split('_'))
-        orgID = searchCLI.base_url, orgName, 'organizations', 'name', 'othernames', headers, [])
+        orgID = searchCLI.searchCLI(base_url, orgName, 'organizations', 'name', 'other_names', headers, [])
         
         if not orgID:
             orgP = {'name': orgName}
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         
         sys.argv = ['membershipsUpdate_langs.py']
         import membershipsUpdate_langs  
-        df.apply(lambda row: membershipsUpdate_langs.genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs), axis=1)
+        df[:1].apply(lambda row: membershipsUpdate_langs.genPayload(base_url, headers, row, orgID, gSheet_details, sub_langs), axis=1)
         
           
     elif classType == 'person':

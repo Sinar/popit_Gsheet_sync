@@ -27,7 +27,7 @@ def personsUpdate(df, base_url, headers, gSheet_details):
     for i in newPersons.index:
         person=  newPersons.loc[i]
         personName = person['name_en']
-        person_id = searchCLI.searchCLI(base_url, personName, 'persons', 'name', 'othernames', headers, ['birth_date'])
+        person_id = searchCLI.searchCLI(base_url, personName, 'persons', 'name', 'other_names', headers, ['birth_date'])
         if person_id:
             #set id of person as id found
             df.loc[i, 'person_id'] = person_id
