@@ -25,22 +25,26 @@ def searchCLI(base_url, name, class_, feature, otherfeature, headers, featureLis
     '''
       
     searchExactURL = u'{}/en/search/{}?q={}:"{}"'.format(base_url, class_, feature, name)
-    matchID = searchMatchCLI(searchExactURL, name, feature, featureList, exact=True)
+    match = searchMatchCLI(searchExactURL, name, feature, featureList, exact=True)
     
-    if not matchID:
+    if match:
+        matchID = match[0]
+    else:  #Exact search failed, try flexible search
         searchURL = u'{}/en/search/{}?q={}:{}'.format(base_url, class_, feature, name)
-        matchID = searchMatchCLI(searchURL, name, feature, featureList)
+        match = searchMatchCLI(searchURL, name, feature, featureList)
 
-        if matchID:
+        if match:
+             matchID = match[0]
+             matchedVal = match[1]
              while True:
-                store = input(u'Store "{0}" as an alternate {1} under the matched {1}? (y/n): '.format(name, feature))
+                store = input(u'Updated {0} to "{1}". Store "{2}" as an alternate {0}? (y/n): '.format(feature, name, matchedVal))
                 if store.lower() == 'y':
                     storeURL = u'{}/en/{}/{}'.format(base_url, class_, matchID)                               
-                    storePayload = {otherfeature: [{feature: name}]}
+                    storePayload = {otherfeature: [{feature: matchedVal}]}
                     r_othernames = requests.put(storeURL, headers=headers, json=storePayload)
 
                     if not r_othernames.ok:
-                        print("Failed to store {} as alternate name under {}".format(name, matchID))
+                        print("Failed to store {} as alternate name under {}".format(matchedVal, matchID))
                     break
             
                 elif store.lower() == 'n':
@@ -49,6 +53,7 @@ def searchCLI(base_url, name, class_, feature, otherfeature, headers, featureLis
                    print("Invalid input\nDo any of these results match? (y/n)")
         else:
             print(u"No matches found for {}. A new entry will be made for this.".format(name))
+            matchID = ""
             
     return matchID
 
@@ -60,17 +65,19 @@ def searchMatchCLI(searchURL, name, feature, featureList, exact=False):
         results = r.json()['results']
         
         if exact and len(results)==1:
-            matchID = results[0]['id']
-            print('One match found for {}: \n{}'.format(name, matchID))
+            result = results[0]
+            match = [result['id'], result[str(feature)]]
+            print('One match found for {}: \n{} ({})'.format(name, match[1], match[0]))
         
         else:
-            ids= []
+            matches= []
             print('Matches found for {}: '.format(name))
 
             for j in range(min(5, len(results))):
                 p= results[j]
-                ids.append(p['id'])
-
+                matches.append([p['id'], p[str(feature)]])
+                
+                #p[feature]
                 print("\n===========")
                 print(u"{}. {}".format(j, p[str(feature)]))
                 print("Popit ID: {}".format(p['id']))
@@ -78,28 +85,28 @@ def searchMatchCLI(searchURL, name, feature, featureList, exact=False):
                     print(u"{}: {}".format(f.upper(), p[str(f)]))
                 
             while True:
-                match = input(u"Do any of these results match for {}? (y/n): ".format(name))
-                if match.lower() == 'y':
+                matched = input(u"Do any of these results match for {}? (y/n): ".format(name))
+                if matched.lower() == 'y':
                     while True:
                         try:
                             matchIndex = int(input("Please select the matching index: "))
-                            if matchIndex>=0 and matchIndex< len(ids):
-                                matchID = ids[matchIndex]
+                            if matchIndex>=0 and matchIndex< len(matches):
+                                match = matches[matchIndex]
                                 break
                         except:
                             pass
                         
                     break
-                elif match.lower() == 'n':
-                    matchID = "" 
+                elif matched.lower() == 'n':
+                    match = None
                     break
                 else:
                     print("Invalid input\nDo any of these results match? (y/n)")
             
     else:
-        matchID = ""
+        match = None
      
     
-    return matchID
+    return match
                     
             
