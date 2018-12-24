@@ -25,7 +25,7 @@ def searchCLI(base_url, name, class_, feature, otherfeature, headers, featureLis
     '''
       
     searchExactURL = u'{}/en/search/{}?q={}:"{}"'.format(base_url, class_, feature, name)
-    matchID = searchMatchCLI(searchExactURL, name, feature, featureList)
+    matchID = searchMatchCLI(searchExactURL, name, feature, featureList, exact=True)
     
     if not matchID:
         searchURL = u'{}/en/search/{}?q={}:{}'.format(base_url, class_, feature, name)
@@ -53,13 +53,13 @@ def searchCLI(base_url, name, class_, feature, otherfeature, headers, featureLis
     return matchID
 
 
-def searchMatchCLI(searchURL, name, feature, featureList):
+def searchMatchCLI(searchURL, name, feature, featureList, exact=False):
     r = requests.get(searchURL)
     
     if r.json()['results']:
         results = r.json()['results']
         
-        if len(results)==1:
+        if exact and len(results)==1:
             matchID = results[0]['id']
             print('One match found for {}: \n{}'.format(name, matchID))
         
@@ -67,7 +67,6 @@ def searchMatchCLI(searchURL, name, feature, featureList):
             ids= []
             print('Matches found for {}: '.format(name))
 
-            #for j in range(len(results)):
             for j in range(min(5, len(results))):
                 p= results[j]
                 ids.append(p['id'])
